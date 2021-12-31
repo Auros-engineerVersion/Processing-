@@ -1,17 +1,17 @@
-int gridIndex = 8; //<>// //<>// //<>//
+int gridIndex = 8; //<>//
 
 float gridStrokeWeight = 2.5f;
 float canvasSize = 512;
-float offset = canvasSize / 10f;
-float linePos[] = new float[gridIndex];
-float squarPos[] = new float[gridIndex];
+float offset = canvasSize / 17.5f;
+float gridPos[] = new float[gridIndex];
+float squareSize = 63f;
 
-color backGround = color(50, 175, 50);
+color green = color(50, 175, 50);
 
 void setup()
 {
   size(512, 512);
-  background(backGround);
+  background(green);
 
   GridPosCheck();
 }
@@ -25,11 +25,10 @@ private void GridPosCheck()
 {
   for (int i = 0; i < gridIndex; i++)
   {
-    //x
     float tempIndex = i;
     float tempGridIndex = gridIndex;
     float currentNum = canvasSize * (tempIndex / tempGridIndex);
-    linePos[i] = currentNum;
+    gridPos[i] = currentNum;
   }
 }
 
@@ -37,17 +36,15 @@ private void DrawLine()
 {
   for (int i = 0; i < gridIndex; i++)
   {
-    for(int j = 0; j < gridIndex; j++)
+    for (int j = 0; j < gridIndex; j++)
     {
-      strokeWeight(gridStrokeWeight);
-      point(linePos[i] + offset, linePos[j] + offset);
-      float gridVector2[] = {linePos[i] + offset, linePos[j] + offset};
-      
+      rectMode(CORNER);
+      GritChanger(gridPos[i], gridPos[j], squareSize);
     }
-    /*
-    strokeWeight(gridStrokeWeight);
-   line(linePos[i], canvasSize, linePos[i], -canvasSize);//縦線
-   line(canvasSize, linePos[i], -canvasSize, linePos[i]);//横線
-   */
   }
+}
+
+private void GritChanger(float xGridPos, float yGridPos, float size)
+{
+  rect(xGridPos, yGridPos, size, size);
 }
