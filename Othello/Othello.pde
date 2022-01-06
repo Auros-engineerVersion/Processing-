@@ -11,19 +11,28 @@ float squareSize = 63f;
 color greenLight = color(50, 175, 50);
 color greenDark  = color(75, 175, 75);
 
-ArrayList<GridSquare> grid;
+public GridSquare[][] grid;
 
+Board board;
 void setup()
 {
   size(512, 512);
+}
 
-  gridPos = new int[gridIndex][gridIndex];
+void draw()
+{
+  GridSquareSetting();
+}
+
+void GridSquareSetting()
+{
+  grid = new GridSquare[gridIndex + 1][gridIndex + 1];
 
   for (int x = 0; x <= gridIndex; x++)
   {
     for (int y = 0; y <= gridIndex; y++)
     {
-      GridSquare g = new GridSquare(x, y);
+      grid[x][y] = new GridSquare(x, y);
 
       float toFloatX = x;
       float toFloatY = y;
@@ -31,8 +40,8 @@ void setup()
       float X = canvasSize * (toFloatX / gridIndex);//gridIndexを1として、割合の数値に変換
       float Y = canvasSize * (toFloatY / gridIndex);
 
-      g.CheckMousePos();
-      g.Display(X, Y, squareSize);
+      grid[x][y].CheckMousePos();
+      grid[x][y].Display(X, Y, squareSize);
 
       fill(0);
       text("mousw X :" + mouseX, 10, 10);
@@ -40,12 +49,6 @@ void setup()
     }
   }
 }
-
-void draw()
-{
-  
-}
-
 
 public class GridSquare
 {
@@ -62,6 +65,7 @@ public class GridSquare
   void Display(float posX, float posY, float size)//四角形を書く
   {
     strokeWeight(gridStrokeWeight);
+    fill(greenLight);
 
     rectMode(CORNERS);
     rect(posX, posY, posX + size, posY + size);
@@ -73,13 +77,14 @@ public class GridSquare
 
   void CheckMousePos()//四角形の中にマウスボタンがあるか検知
   {
-    if (posX < mouseX & mouseX > posX + size)//色を変更
+    if ((posX < mouseX && mouseX > posX + size) && 
+      (posY < mouseY && mouseY > posY + size))//色を変更
     {
-      fill(greenDark);
-      println("範囲内" + "x = " + id_x + ", " + "y = " + id_y);
+      println("範囲内");
+      fill(0);
     } else
     {
-      fill(greenLight);
+      println("範囲外");
     }
   }
 }
