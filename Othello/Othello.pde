@@ -1,5 +1,6 @@
 int canvasSize = 512;
 int fieldSize = 8;
+int cellSize;
 
 int field[][];
 int row;
@@ -86,10 +87,25 @@ void PutCell()
   {
     field[mousePos(mouseY)][mousePos(mouseX)] = hasStone;
     hasStone *= -1;
+    EllipseDraw(hasStone, mousePos(mouseX), mousePos(mouseY));
   }
 }
 
-void EllipseDraw(int BlackORWhite)//0 = null, 1 == white. -1 == black
+void EllipseDraw(int BlackORWhite, int x, int y)//0 = null, 1 == white. -1 == black
 {
-  
+  if(BlackORWhite == 1)
+  {
+    fill(0);
+  }
+  else if(BlackORWhite == -1)
+  {
+    fill(255);
+  }
+
+  int cellX = x * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
+  int cellY = y * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
+  int cellSize = (canvasSize / fieldSize) - 10;
+
+  ellipseMode(CENTER);
+  ellipse(cellX, cellY, cellSize, cellSize);
 }
