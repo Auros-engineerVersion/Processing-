@@ -1,0 +1,30 @@
+int canvasSize = 512;
+int fieldSize = 8;
+
+int field[][];
+
+void setup()
+{
+  size(512, 512);
+  FieldManagr();
+}
+
+void draw()
+{
+}
+
+void FieldManager()
+{
+  int row;
+  int col;
+
+  field = new int[fieldSize][fieldSize];
+
+  for (row = 0; row < 8; row++)
+  {
+    for (col = 0; col < 8; col++)
+    {
+      field[row][col] = 0;
+    }
+  }
+}

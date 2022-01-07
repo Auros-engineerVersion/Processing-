@@ -1,0 +1,52 @@
+int canvasSize = 512;
+int fieldSize = 8;
+
+int field[][];
+int row;
+int col;
+
+void setup()
+{
+  size(512, 512);
+  FieldManager();
+  DebugDraw();
+}
+
+void draw()
+{
+}
+
+void FieldManager()
+{
+  String  tempString;
+
+  field = new int[fieldSize][fieldSize];
+
+  for (row = 0; row < fieldSize; row++)
+  {
+    for (col = 0; col < fieldSize; col++)
+    {
+      field[row][col] = 0;
+    }
+  }
+}
+
+private void DebugDraw()
+{
+  for (int a = 0; a < fieldSize; a++)
+  {
+    println(str(field[a][0]) + str(field[a][1]) + str(field[a][2]) + str(field[a][3]) + 
+      str(field[a][4]) + str(field[a][5]) + str(field[a][6]) + str(field[a][7]));
+  }
+}
+
+String strPlus(String strValue)
+{
+  String l = "[";
+  String r = "]";
+  String m = ", ";
+  
+  String a = new String(l + strValue + r + m);
+
+  return a;
+}
