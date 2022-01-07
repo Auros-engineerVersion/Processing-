@@ -4,28 +4,38 @@ int fieldSize = 8;
 int field[][];
 int row;
 int col;
+int hasStone = 1;
 
 String strPlus(int intValue)
 {
-  String l = "[";
-  String r = "]";
-  String m = ", ";
-  String strValue = null;
-
-  strValue = new String(l + intValue + r + m);
+  String strValue = new String("[" + intValue + "]" + ", ");
 
   return strValue;
+}
+
+int mousePos(float mousePos)
+{
+  int tempInt = floor(mousePos / (canvasSize / fieldSize));
+  return tempInt;
 }
 
 void setup()
 {
   size(512, 512);
+  background(0, 140, 0);
   FieldManager();
-  PutCell();
+  DebugDraw();
 }
 
 void draw()
 {
+  GridDraw();
+}
+
+void mousePressed()
+{
+  PutCell();
+  DebugDraw();
 }
 
 void FieldManager()
@@ -39,25 +49,39 @@ void FieldManager()
       field[row][col] = 0;//0 = null, 1 == white. -1 == black
     }
   }
-
-  DebugDraw();
 }
 
 void DebugDraw()
 {
   println("↓col/row→");
-  println("  1    2    3    4    5    6    7    8");
-                               
+  println("  0    1    2    3    4    5    6    7");
+
   for (int a = 0; a < fieldSize; a++)
   {
-    println((a + 1) + strPlus(field[a][0]) + strPlus(field[a][1]) + strPlus(field[a][2]) + strPlus(field[a][3]) + 
+    println(a + strPlus(field[a][0]) + strPlus(field[a][1]) + strPlus(field[a][2]) + strPlus(field[a][3]) + 
       strPlus(field[a][4]) + strPlus(field[a][5]) + strPlus(field[a][6]) + strPlus(field[a][7]));
-      println(" ");
+    println(" ");
   }
 }
 
-void PutCell()//この二つのintはUIを作るまでの一時的なもの,
+void GridDraw()
 {
-  field[3][4] = 1;
-  field[4][3] = -1;
+  float posX, posY;
+
+  for (int i = 0; i < fieldSize; i++)
+  {
+    posX = (canvasSize / fieldSize);
+    posY = (canvasSize / fieldSize);
+
+    fill(255);
+    strokeWeight(1);
+    line(i * posX, width, i * posX, -width);//col
+    line(height, i * posY, -height, i * posY);//row
+  }
+}
+
+void PutCell()
+{
+  field[mousePos(mouseY)][mousePos(mouseX)] = hasStone;//何故か逆だと正常な位置になる
+  hasStone *= -1;
 }
