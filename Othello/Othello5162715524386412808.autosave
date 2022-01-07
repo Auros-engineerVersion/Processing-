@@ -82,14 +82,10 @@ void GridDraw()
 
 void PutCell()
 {
-  if (field[mousePos(mouseY)][mousePos(mouseX)] == 0)//nullでしか置けない
+  if()
   {
-    field[mousePos(mouseY)][mousePos(mouseX)] = hasStone;
-    hasStone *= -1;
+    
   }
-}
-
-void EllipseDraw(int BlackORWhite)//0 = null, 1 == white. -1 == black
-{
-  
+  field[mousePos(mouseY)][mousePos(mouseX)] = hasStone;//何故か逆だと正常な位置になる
+  hasStone *= -1;
 }
