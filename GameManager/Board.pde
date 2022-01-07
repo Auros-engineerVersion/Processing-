@@ -23,12 +23,19 @@ class Board
 
   void Display()
   {
-    for (ArrayList<ArrayList> row: cells)
+    for (ArrayList<Cell> row : cells)
     {
-      for (Cell c: row)
+      for (Cell c : row)
       {
         c.Display();
       }
     }
+  }
+  
+  Cell getCellPos(int x, int y)
+  {
+    int rowNum = floor(x / (canvasSize / boardIndex));
+    int colNum = floor(y / (canvasSize / boardIndex));
+    return (Cell) cells.get(rowNum).get(colNum);//その数の位置にあるcellを取得
   }
 }

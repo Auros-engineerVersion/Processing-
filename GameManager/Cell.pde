@@ -1,6 +1,8 @@
 class Cell
 {
-  int row, col;
+  int col;
+  int row;
+  int hasStone = 0;
 
   Cell(int colNum, int rowNum)
   {
@@ -28,5 +30,26 @@ class Cell
     stroke(0);
 
     rect(posX, posY, posX + rectSize, posY + rectSize);
+
+    if (hasStone != 0)
+    {
+      noStroke();
+
+      if (hasStone == 1)
+      {
+        fill(0);
+      } else
+      {
+        fill(255);
+      }
+
+      Pice pice = new Pice(posX, posY, rectSize);
+      pice.Display(hasStone);
+    }
+  }
+
+  void PutStone(int stoneColor)
+  {
+    hasStone = stoneColor;
   }
 }

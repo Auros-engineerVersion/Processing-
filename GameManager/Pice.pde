@@ -1,9 +1,9 @@
-class PiceDraw
+class Pice
 {
   float ellipseX, ellipseY;
   float ellipseSize;
 
-  PiceDraw(float tempX, float tempY, float tempSize)
+  Pice(float tempX, float tempY, float tempSize)
   {
     ellipseX = tempX;
     ellipseY = tempY;
