@@ -109,3 +109,8 @@ void EllipseDraw(int BlackORWhite, int x, int y)//0 = null, 1 == white. -1 == bl
   ellipseMode(CENTER);
   ellipse(cellX, cellY, cellSize, cellSize);
 }
+
+void CellFlipCheck()
+{
+  
+}
