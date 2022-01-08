@@ -1,5 +1,5 @@
 int canvasSize = 512;
-int fieldSize = 100;
+int fieldSize = 8;//8の倍数にすること
 int cellSize;
 
 int field[][];
@@ -45,6 +45,16 @@ void mousePressed()
   }
 
   DebugDraw();
+
+  int dirRow = 1;
+  int dirCol = -1;
+
+  for (int i = 0; i < 3; i++)
+  {
+    println("dirRow = " + dirRow + ", " + "dirCol = " + dirCol);
+    dirRow--;
+    dirCol++;
+  }
 }
 
 void FieldSetUp()
@@ -127,9 +137,24 @@ void CellDraw(int rowNum, int colNum)
 boolean CellCanPutCheck(int startRow, int startCol)//周りに何があるか検知
 {
   boolean tempBool = false;
-  int dirRow, dir Col;
+  int dirRow = 0;
+  int dirCol = 0;
 
-  if (field[startCol + 1][startRow + 0] != 0)//上
+  for (int i = 0; i < 2; i++)
+  {
+    dirCol = 1;
+
+    for (int j = 0; j < 2; j++)
+    {
+      dirRow = 1;
+    }
+
+    dirRow *= -1;
+    dirCol *= -1;
+
+    println("dirRow = " + dirRow + ", " + "dirCol = " + dirCol);
+  }
+  if (field[startCol + dirCol][startRow + dirRow] != 0)//上
   {
     tempBool = true;
   }
@@ -141,7 +166,8 @@ boolean CellCanPutCheck(int startRow, int startCol)//周りに何があるか検
   return tempBool;
 
   /*
- 1, 0上
+  
+   1, 0上
    -1, 0下
    
    1, 1右上
@@ -152,5 +178,6 @@ boolean CellCanPutCheck(int startRow, int startCol)//周りに何があるか検
    
    1, -1左上;
    -1, -1左下
+   
    */
 }
