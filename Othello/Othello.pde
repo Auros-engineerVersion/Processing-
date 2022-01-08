@@ -1,5 +1,5 @@
 int canvasSize = 512;
-int fieldSize = 8;
+int fieldSize = 100;
 int cellSize;
 
 int field[][];
@@ -24,22 +24,30 @@ void setup()
 {
   size(512, 512);
   background(0, 140, 0);
-  FieldManager();
+  FieldSetUp();
+  GridDraw();
   DebugDraw();
 }
 
 void draw()
 {
-  GridDraw();
 }
 
 void mousePressed()
 {
-  PutCell();
+  int row = mousePos(mouseX);
+  int col = mousePos(mouseY);
+
+  if (field[col][row] == 0)
+  {
+    field[col][row] = hasStone;
+    CellDraw(row, col);
+  }
+
   DebugDraw();
 }
 
-void FieldManager()
+void FieldSetUp()
 {
   field = new int[fieldSize][fieldSize];
 
@@ -54,14 +62,29 @@ void FieldManager()
 
 void DebugDraw()
 {
+  println("");
   println("↓col/row→");
-  println("  0    1    2    3    4    5    6    7");
 
   for (int a = 0; a < fieldSize; a++)
   {
-    println(a + strPlus(field[a][0]) + strPlus(field[a][1]) + strPlus(field[a][2]) + strPlus(field[a][3]) + 
-      strPlus(field[a][4]) + strPlus(field[a][5]) + strPlus(field[a][6]) + strPlus(field[a][7]));
-    println(" ");
+    if (a == 0) print("  ");
+    print(a);
+    if (a != fieldSize - 1)  print("    ");
+  }
+
+  println();
+
+  for (int i = 0; i < fieldSize; i++)
+  {
+    if (i != 0)  println("");
+    print(i);
+
+    for (int j = 0; j < fieldSize; j++)
+    {
+      print(strPlus(field[i][j]));
+    }
+
+    println("");
   }
 }
 
@@ -81,36 +104,53 @@ void GridDraw()
   }
 }
 
-void PutCell()
+void CellDraw(int rowNum, int colNum)
 {
-  if (field[mousePos(mouseY)][mousePos(mouseX)] == 0)//nullでしか置けない
-  {
-    field[mousePos(mouseY)][mousePos(mouseX)] = hasStone;
-    hasStone *= -1;
-    EllipseDraw(hasStone, mousePos(mouseX), mousePos(mouseY));
-  }
-}
-
-void EllipseDraw(int BlackORWhite, int x, int y)//0 = null, 1 == white. -1 == black
-{
-  if(BlackORWhite == 1)
+  if (hasStone == 1)
   {
     fill(0);
-  }
-  else if(BlackORWhite == -1)
+  } else if (hasStone == -1)
   {
     fill(255);
   }
 
-  int cellX = x * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
-  int cellY = y * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
+  hasStone *= -1;
+
+  int cellX = rowNum * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
+  int cellY = colNum * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
   int cellSize = (canvasSize / fieldSize) - 10;
 
   ellipseMode(CENTER);
   ellipse(cellX, cellY, cellSize, cellSize);
 }
 
-void CellFlipCheck()
+boolean CellCanPutCheck(int startRow, int startCol)//周りに何があるか検知
 {
-  
+  boolean tempBool = false;
+  int dirRow, dir Col;
+
+  if (field[startCol + 1][startRow + 0] != 0)//上
+  {
+    tempBool = true;
+  }
+
+  if (field[startCol + 1][startRow + 1] != 0)
+  {
+  }
+
+  return tempBool;
+
+  /*
+ 1, 0上
+   -1, 0下
+   
+   1, 1右上
+   -1, -1右下
+   
+   0, 1右
+   0, -1左
+   
+   1, -1左上;
+   -1, -1左下
+   */
 }
