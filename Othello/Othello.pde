@@ -1,5 +1,7 @@
+int boundSize = 2;
+int fieldSize = 8 + 2;
 int canvasSize = 512;
-int fieldSize = 8;
+
 int cellSize;
 
 int field[][];
@@ -9,15 +11,47 @@ int hasStone = 1;
 
 String strPlus(int intValue)
 {
-  String strValue = new String("[" + intValue + "]" + ", ");
+  String strValue;
+
+  if (intValue != 2)
+  {
+    strValue = new String("[" + intValue + "]" + ", ");
+    return strValue;
+  } else
+  {
+    strValue = new String("<" + intValue + ">" + ", ");
+  }
 
   return strValue;
 }
 
-int mousePos(float mousePos)
+int mousePos(float mousePos)//ここで設置する場所を決める
 {
   int tempInt = floor(mousePos / (canvasSize / fieldSize));
   return tempInt;
+}
+
+boolean cellCanPutCheck(int startRow, int startCol)//周りに何があるか検知
+{
+  boolean canPutCell = false;//最終的な判断
+
+  if (field[startRow][startCol] == 0)//置く場所が空いているか
+  {
+    for (int dirRow = -1; dirRow < 2; dirRow++)
+    {
+      for (int dirCol = -1; dirCol < 2; dirCol++)
+      {
+        println("dirRow = " + dirRow + ", " + "dirCol = " + dirCol);
+
+        if (field[startRow + dirRow][startCol + dirCol] != 0)//四方八方に駒があるか検知
+        {
+          canPutCell = true;
+        }
+      }
+    }
+  }
+
+  return canPutCell;
 }
 
 void setup()
@@ -25,11 +59,24 @@ void setup()
   size(512, 512);
   background(0, 140, 0);
   FieldSetUp();
-  GridDraw();
   DebugDraw();
 }
 
-void draw() {
+void draw()
+{
+  GridDraw();
+
+  for (int rowNum = 0; rowNum < fieldSize; rowNum++)
+  {
+    for (int colNum = 0; colNum < fieldSize; colNum++)
+    {
+      if (field[rowNum][colNum] != 0 && field[rowNum][colNum] != 2
+        )
+      {
+        CellDraw(rowNum, colNum);
+      }
+    }
+  }
 }
 
 void mousePressed()
@@ -37,25 +84,33 @@ void mousePressed()
   int row = mousePos(mouseX);
   int col = mousePos(mouseY);
 
-  if (field[row][col] ==  0 && CellCanPutCheck(row, col))
+  if (cellCanPutCheck(row, col))
   {
     field[row][col] = hasStone;
-    CellDraw(row, col);
+    hasStone *= -1;
   }
 
+  println("mouseX = " + row + ", " + "mouseY = " + col);
   DebugDraw();
 }
 
 void FieldSetUp()
 {
-  int iniPos = fieldSize / 2 - 1;
+  int iniPos = ((fieldSize) / 2) - 1;
   field = new int[fieldSize][fieldSize];
 
   for (row = 0; row < fieldSize; row++)
   {
     for (col = 0; col < fieldSize; col++)
     {
-      field[row][col] = 0;//0 = null, 1 == white. -1 == black
+      if ((row == 0 || col == 0) ||
+        (row == fieldSize - 1) || (col == fieldSize - 1))
+      {
+        field[row][col] = 2;//枠外, nullの代わり
+      } else
+      {
+        field[row][col] = 0;//0 = null, 1 == white. -1 == black
+      }
     }
   }
 
@@ -63,18 +118,22 @@ void FieldSetUp()
   field[iniPos][iniPos] = hasStone;//white
   println(hasStone);
   CellDraw(iniPos, iniPos);
+  hasStone *= -1;
 
   field[iniPos + 1][iniPos] = hasStone;//black
   println(hasStone);
   CellDraw(iniPos + 1, iniPos);
+  hasStone *= -1;
 
   field[iniPos + 1][iniPos + 1] = hasStone;//white
   println(hasStone);
   CellDraw(iniPos + 1, iniPos + 1);
+  hasStone *= -1;
 
   field[iniPos][iniPos + 1] = hasStone;//black
   println(hasStone);
   CellDraw(iniPos, iniPos + 1);
+  hasStone *= -1;
 }
 
 void DebugDraw()
@@ -82,21 +141,21 @@ void DebugDraw()
   println("");
   println("↓col/row→");
 
-  for (int a = 0; a < fieldSize; a++)
+  for (int rowID = 0; rowID < fieldSize; rowID++)//↓col/row→のナンバーを表示
   {
-    if (a == 0) print("  ");
-    print(a);
-    if (a != fieldSize - 1)  print("    ");
+    if (rowID == 0) print("  ");
+    print(rowID);
+    if (rowID != fieldSize - 1)  print("    ");//横のIDの間の隙間
   }
 
-  println();
+  println();//最後の行まで行った後の改行
 
   for (int i = 0; i < fieldSize; i++)
   {
-    if (i != 0)  println("");
+    if (i != 0)  println("");//縦の隙間を作る
     print(i);
 
-    for (int j = 0; j < fieldSize; j++)
+    for (int j = 0; j < fieldSize; j++)//ベースの碁盤を描写
     {
       print(strPlus(field[j][i]));
     }
@@ -105,11 +164,12 @@ void DebugDraw()
   }
 }
 
-void GridDraw()
+void GridDraw()//碁盤を書く
 {
   float posX, posY;
+  float rectOffset = 5;
 
-  for (int i = 0; i < fieldSize; i++)
+  for (int i = 0; i < fieldSize; i++)//碁盤の線
   {
     posX = (canvasSize / fieldSize);
     posY = (canvasSize / fieldSize);
@@ -119,6 +179,14 @@ void GridDraw()
     line(i * posX, width, i * posX, -width);//col
     line(height, i * posY, -height, i * posY);//row
   }
+
+  //枠
+  fill(0);
+  rectMode(CORNERS);
+  rect(0, 0, width, (canvasSize / fieldSize) - rectOffset);//上
+  rect(0, height, width, (fieldSize - 1) * ((canvasSize / fieldSize)) + rectOffset);//下
+  rect(0, 0, (canvasSize / fieldSize) - rectOffset, height);//左
+  rect(width, 0, (fieldSize - 1) * ((canvasSize / fieldSize)) + rectOffset, height);//右
 }
 
 void CellDraw(int rowNum, int colNum)
@@ -131,34 +199,12 @@ void CellDraw(int rowNum, int colNum)
     fill(0);
   }
 
-  hasStone *= -1;
-
-  int cellX = rowNum * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
-  int cellY = colNum * (canvasSize / fieldSize) + ((canvasSize / fieldSize) / 2);
+  int cellX = rowNum * (canvasSize / fieldSize) + (canvasSize / fieldSize / 2);
+  int cellY = colNum * (canvasSize / fieldSize) + (canvasSize / fieldSize / 2);
   int cellSize = (canvasSize / fieldSize) - 10;
 
   ellipseMode(CENTER);
   ellipse(cellX, cellY, cellSize, cellSize);
-}
-
-boolean CellCanPutCheck(int startRow, int startCol)//周りに何があるか検知
-{
-  boolean canPutCell = false;//最終的な判断
-
-  for (int dirRow = -1; dirRow < 2; dirRow++)
-  {
-    for (int dirCol = -1; dirCol < 2; dirCol++)
-    {
-      if (startRow + dirRow != 0 && startCol + dirCol != 0)//0, 0(中心)以外
-      {
-        
-      }
-
-      println("dirRow = " + dirRow + ", " + "dirCol = " + dirCol);
-    }
-  }
-
-  return canPutCell;
 }
 
 /*
