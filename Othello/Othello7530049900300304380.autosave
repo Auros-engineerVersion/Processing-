@@ -29,7 +29,8 @@ void setup()
   DebugDraw();
 }
 
-void draw() {
+void draw()
+{
 }
 
 void mousePressed()
@@ -37,9 +38,9 @@ void mousePressed()
   int row = mousePos(mouseX);
   int col = mousePos(mouseY);
 
-  if (field[row][col] ==  0 && CellCanPutCheck(row, col))
+  if (field[col][row] == 0)
   {
-    field[row][col] = hasStone;
+    field[col][row] = hasStone;
     CellDraw(row, col);
   }
 
@@ -48,7 +49,6 @@ void mousePressed()
 
 void FieldSetUp()
 {
-  int iniPos = fieldSize / 2 - 1;
   field = new int[fieldSize][fieldSize];
 
   for (row = 0; row < fieldSize; row++)
@@ -58,23 +58,6 @@ void FieldSetUp()
       field[row][col] = 0;//0 = null, 1 == white. -1 == black
     }
   }
-
-  //初期値
-  field[iniPos][iniPos] = hasStone;//white
-  println(hasStone);
-  CellDraw(iniPos, iniPos);
-
-  field[iniPos + 1][iniPos] = hasStone;//black
-  println(hasStone);
-  CellDraw(iniPos + 1, iniPos);
-
-  field[iniPos + 1][iniPos + 1] = hasStone;//white
-  println(hasStone);
-  CellDraw(iniPos + 1, iniPos + 1);
-
-  field[iniPos][iniPos + 1] = hasStone;//black
-  println(hasStone);
-  CellDraw(iniPos, iniPos + 1);
 }
 
 void DebugDraw()
@@ -98,7 +81,7 @@ void DebugDraw()
 
     for (int j = 0; j < fieldSize; j++)
     {
-      print(strPlus(field[j][i]));
+      print(strPlus(field[i][j]));
     }
 
     println("");
@@ -123,12 +106,12 @@ void GridDraw()
 
 void CellDraw(int rowNum, int colNum)
 {
-  if (field[rowNum][colNum] == 1)
-  {
-    fill(255);
-  } else if (field[rowNum][colNum] == -1)
+  if (hasStone == 1)
   {
     fill(0);
+  } else if (hasStone == -1)
+  {
+    fill(255);
   }
 
   hasStone *= -1;
@@ -143,40 +126,48 @@ void CellDraw(int rowNum, int colNum)
 
 boolean CellCanPutCheck(int startRow, int startCol)//周りに何があるか検知
 {
-  boolean canPutCell = false;//最終的な判断
+  boolean tempBool = false;
+  int dirRow = 0;
+  int dirCol = 0;
 
-  for (int dirRow = -1; dirRow < 2; dirRow++)
+  for (int i = 0; i < 2; i++)
   {
-    for (int dirCol = -1; dirCol < 2; dirCol++)
-    {
-      if (startRow + dirRow != 0 && startCol + dirCol != 0)//0, 0(中心)以外
-      {
-        
-      }
+    dirCol = 1;
 
-      println("dirRow = " + dirRow + ", " + "dirCol = " + dirCol);
+    for (int j = 0; j < 2; j++)
+    {
+      dirRow = 1;
     }
+
+    dirRow *= -1;
+    dirCol *= -1;
+
+    println("dirRow = " + dirRow + ", " + "dirCol = " + dirCol);
+  }
+  if (field[startCol + dirCol][startRow + dirRow] != 0)//上
+  {
+    tempBool = true;
   }
 
-  return canPutCell;
-}
+  if (field[startCol + 1][startRow + 1] != 0)
+  {
+  }
 
-/*
-      0, -1上
- 0, 1下
- 
- -1, -1右上
- 1, 1右下
- 
- -1, 0左
- 1, 0右
- 
- -1, -1左上;
- -1, 1左下
- 
- (-1, -1)  (0, -1)  (1, -1)
- 左上         上       右上
- (-1, 0)  左  @  右  (1, 0)
- 左下         下       右下
- (-1, 1)   (0, 1)   (1, 1)
- */
+  return tempBool;
+
+  /*
+  
+   1, 0上
+   -1, 0下
+   
+   1, 1右上
+   -1, -1右下
+   
+   0, 1右
+   0, -1左
+   
+   1, -1左上;
+   -1, -1左下
+   
+   */
+}
