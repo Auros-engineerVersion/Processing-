@@ -5,11 +5,6 @@ int canvasSize = 512;
 int cellSize;
 
 int field[][];
-ArrayList<ArrayList<Integer>> flipPosList;
-ArrayList<Integer> flipRow = new ArrayList<Integer>();
-ArrayList<Integer> flipCol = new ArrayList<Integer>();
-;
-
 int row;
 int col;
 int hasStone = -1;
@@ -46,22 +41,15 @@ boolean cellCanPutCheck(int startRow, int startCol, int stoneColor)//周りに�
     {
       for (int dirCol = -1; dirCol < 2; dirCol++)
       {
-        if (field[startRow + dirRow][startCol + dirCol] != 0 &&
-          field[startRow + dirRow][startCol + dirCol] != 2)//四方八方に駒があるか検知
+        if (field[startRow + dirRow][startCol + dirCol] != 0 && field[startRow + dirRow][startCol + dirCol] != 2)//四方八方に駒があるか検知
         {
           if (field[startRow + dirRow][startCol + dirCol] == stoneColor)//色が同じ
           {
-            canPutCell = true;
-            //色が同じものの座標とhasStoneを出力
             println("色が同じ " + "row = " + (startRow + dirRow) +  ", " + "col = " + (startCol + dirCol)
               + ", " + "stoneColor = " + field[startRow + dirRow][startCol + dirCol]);
-
-            flipRow.add(startRow + dirCol);
-            flipCol.add(startCol + dirCol);
-
-            flipPosList.add(flipRow);
-            flipPosList.add(flipCol);
+            CellFlip(field[startRow + dirRow][startCol + dirCol]);
           }
+          canPutCell = true;
         }
       }
     }
@@ -105,17 +93,14 @@ void mousePressed()
     hasStone *= -1;
   }
 
-  DebugDraw();
-
   println("mouseX = " + row + ", " + "mouseY = " + col);
-  println("flipPosList = " + flipPosList.get(0).get(0));
+  DebugDraw();
 }
 
 void FieldSetUp()
 {
   int iniPos = ((fieldSize) / 2) - 1;
   field = new int[fieldSize][fieldSize];
-  flipPosList = new ArrayList<ArrayList<Integer>>();
 
   for (row = 0; row < fieldSize; row++)
   {
@@ -225,8 +210,15 @@ void CellDraw(int rowNum, int colNum)
   ellipse(cellX, cellY, cellSize, cellSize);
 }
 
-void CellFlip(int stonePosRow, int stonePosCol)
+void CellFlip(int stonePos)
 {
+  IntList stoneList = new IntList();
+
+  stoneList.append(stonePos);
+
+  for (int i = 0; i < stoneList.max(); i++)
+  {
+  }
 }
 /*
       0, -1上
