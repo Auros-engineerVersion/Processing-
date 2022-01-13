@@ -31,32 +31,61 @@ int mousePos(float mousePos)//ここで設置する場所を決める
   return tempInt;
 }
 
-boolean cellCanPutCheck(int startRow, int startCol, int stoneColor)//周りに何があるか検知
+boolean isEmpty(int startRow, int startCol)//置く場所が空いているか
 {
-  boolean canPutCell = false;//最終的な判断
-
-  if (field[startRow][startCol] == 0)//置く場所が空いているか
+  if (field[startRow][startCol] == 0)
   {
-    for (int dirRow = -1; dirRow < 2; dirRow++)
+    return true;
+  } else
+  {
+    return false;
+  }
+}
+
+boolean isCellExist(int startRow, int startCol)//四方八方に駒があるか検知
+{
+  boolean tempBool = false;
+
+  for (int dirRow = -1; dirRow < 2; dirRow++)
+  {
+    for (int dirCol = -1; dirCol < 2; dirCol++)
     {
-      for (int dirCol = -1; dirCol < 2; dirCol++)
+      if (field[startRow + dirRow][startCol + dirCol] != 0 &&
+        field[startRow + dirRow][startCol + dirCol] != 2)
       {
-        if (field[startRow + dirRow][startCol + dirCol] != 0 &&
-          field[startRow + dirRow][startCol + dirCol] != 2)//四方八方に駒があるか検知
-        {
-          if (field[startRow + dirRow][startCol + dirCol] == stoneColor)//色が同じ
-          {
-            canPutCell = true;
-            //色が同じものの座標とhasStoneを出力
-            println("色が同じ " + "row = " + (startRow + dirRow) +  ", " + "col = " + (startCol + dirCol)
-              + ", " + "stoneColor = " + field[startRow + dirRow][startCol + dirCol]);
-          }
-        }
+        tempBool = true;
+      } else
+      {
+        tempBool = false;
       }
     }
   }
 
-  return canPutCell;
+  return tempBool;
+}
+
+boolean isSameColor(int startRow, int startCol, int stoneColor)//色が同じか検知
+{
+  boolean tempBool = false;
+  for (int dirRow = -1; dirRow < 2; dirRow++)
+  {
+    for (int dirCol = -1; dirCol < 2; dirCol++)
+    {
+      if (field[startRow + dirRow][startCol + dirCol] == stoneColor)
+      {
+        tempBool = true;
+
+        //色が同じものの座標とhasStoneを出力
+        println("色が同じ " + "row = " + (startRow + dirRow) +  ", " + "col = " + (startCol + dirCol)
+          + ", " + "stoneColor = " + field[startRow + dirRow][startCol + dirCol]);
+      } else
+      {
+        tempBool = false;
+      }
+    }
+  }
+
+  return tempBool;
 }
 
 void setup()
@@ -85,25 +114,14 @@ void draw()
 
 void mousePressed()
 {
-  int row = mousePos(mouseX);
-  int col = mousePos(mouseY);
-
-  if (cellCanPutCheck(row, col, hasStone))
-  {
-    field[row][col] = hasStone;
-    hasStone *= -1;
-  }
-
-  DebugDraw();
-
-  println("mouseX = " + row + ", " + "mouseY = " + col);
+  PutCell();
 }
 
 void FieldSetUp()
 {
   int iniPos = ((fieldSize) / 2) - 1;
   int rowNum = 0;//rowのみList形式のため
-  
+
   field = new int[fieldSize][fieldSize];
 
   for (row = 0; row < fieldSize; row++)
@@ -214,6 +232,22 @@ void CellDraw(int rowNum, int colNum)
 
   ellipseMode(CENTER);
   ellipse(cellX, cellY, cellSize, cellSize);
+}
+
+void PutCell()
+{
+  int row = mousePos(mouseX);
+  int col = mousePos(mouseY);
+
+  if ()
+  {
+    field[row][col] = hasStone;
+    hasStone *= -1;
+  }
+
+  DebugDraw();
+
+  println("mouseX = " + row + ", " + "mouseY = " + col);
 }
 /*
       0, -1上
