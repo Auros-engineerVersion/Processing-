@@ -5,11 +5,6 @@ int canvasSize = 512;
 int cellSize;
 
 int field[][];
-ArrayList<ArrayList<Integer>> flipPosList;
-ArrayList<Integer> flipRow = new ArrayList<Integer>();
-ArrayList<Integer> flipCol = new ArrayList<Integer>();
-;
-
 int row;
 int col;
 int hasStone = -1;
@@ -55,12 +50,6 @@ boolean cellCanPutCheck(int startRow, int startCol, int stoneColor)//周りに�
             //色が同じものの座標とhasStoneを出力
             println("色が同じ " + "row = " + (startRow + dirRow) +  ", " + "col = " + (startCol + dirCol)
               + ", " + "stoneColor = " + field[startRow + dirRow][startCol + dirCol]);
-
-            flipRow.add(startRow + dirCol);
-            flipCol.add(startCol + dirCol);
-
-            flipPosList.add(flipRow);
-            flipPosList.add(flipCol);
           }
         }
       }
@@ -108,26 +97,28 @@ void mousePressed()
   DebugDraw();
 
   println("mouseX = " + row + ", " + "mouseY = " + col);
-  println("flipPosList = " + flipPosList.get(0).get(0));
 }
 
 void FieldSetUp()
 {
   int iniPos = ((fieldSize) / 2) - 1;
+  int rowNum = 0;//rowのみList形式のため
+  
   field = new int[fieldSize][fieldSize];
-  flipPosList = new ArrayList<ArrayList<Integer>>();
 
   for (row = 0; row < fieldSize; row++)
   {
+    rowNum++;
     for (col = 0; col < fieldSize; col++)
     {
+
       if ((row == 0 || col == 0) ||
         (row == fieldSize - 1) || (col == fieldSize - 1))
       {
-        field[row][col] = 2;//枠外, nullの代わり
+        field[row][col] = 2;
       } else
       {
-        field[row][col] = 0;//0 = null, 1 == white. -1 == black
+        field[row][col] = 0;
       }
     }
   }
@@ -223,10 +214,6 @@ void CellDraw(int rowNum, int colNum)
 
   ellipseMode(CENTER);
   ellipse(cellX, cellY, cellSize, cellSize);
-}
-
-void CellFlip(int stonePosRow, int stonePosCol)
-{
 }
 /*
       0, -1上
