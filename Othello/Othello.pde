@@ -61,17 +61,15 @@ void mousePressed()
   int col = mousePos(mouseY);
 
   println(second());
-  
+
   if (canPutCell(row, col))
   {
     field[row][col] = hasStone;
     flipCell(row, col);
-    println("bbb");
     hasStone *= -1;
   }
 
   DebugDraw();
-  println(canPutCell(row, col));
   println("rowNum = " + row + ", " + "colNum = " + col);
 }
 
