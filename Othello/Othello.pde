@@ -1,12 +1,10 @@
-int boundSize = 2;
-int fieldSize = 8 + 2;
+private int boundSize = 2; //<>//
+private int fieldSize = 8 + 2;
 int canvasSize = 512;
 
 int cellSize;
 
 int field[][];
-int row;
-int col;
 int hasStone = -1;
 
 String strPlus(int intValue)
@@ -31,16 +29,49 @@ int mousePos(float mousePos)//ここで設置する場所を決める
   return tempInt;
 }
 
+boolean canPutCell(int startRow, int startCol)
+{
+  for (int dirRow = -1; dirRow < 2; dirRow++)
+  {
+    for (int dirCol = -1; dirCol < 2; dirCol++)
+    {
+      int curRow = startRow + dirRow;
+      int curCol = startCol + dirCol;
+      
+      if(field[startRow][startCol] == 2)
+      {
+        return false;
+      }
+
+      if ((curRow != 0 || curCol != fieldSize) && (curCol != 0 || curCol != fieldSize))//盤内なら //<>//
+      {
+        while (field[curRow][curCol] == -hasStone)//相手の石ならループ //<>//
+        {
+          curRow += dirRow;
+          curCol += dirCol;
+          
+          if (field[curRow][curCol] == hasStone) 
+          {
+            return true;
+          }
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 void setup()
 {
   size(512, 512);
-  background(0, 140, 0);
   FieldSetUp();
   DebugDraw();
 }
 
 void draw()
 {
+  background(0, 140, 0);
   GridDraw();
 
   for (int rowNum = 0; rowNum < fieldSize; rowNum++)
@@ -60,7 +91,7 @@ void mousePressed()
   int row = mousePos(mouseX);
   int col = mousePos(mouseY);
 
-  println(second());
+  println("row = " + row + ", " + "col = " + col);
 
   if (canPutCell(row, col))
   {
@@ -70,7 +101,11 @@ void mousePressed()
   }
 
   DebugDraw();
-  println("rowNum = " + row + ", " + "colNum = " + col);
+}
+
+void TurnText(int stoneColor)
+{
+  stoneColor = hasStone;
 }
 
 void FieldSetUp()
@@ -79,9 +114,9 @@ void FieldSetUp()
 
   field = new int[fieldSize][fieldSize];
 
-  for (row = 0; row < fieldSize; row++)
+  for (int row = 0; row < fieldSize; row++)
   {
-    for (col = 0; col < fieldSize; col++)
+    for (int col = 0; col < fieldSize; col++)
     {
       if ((row == 0 || col == 0) || 
         (row == fieldSize - 1) || (col == fieldSize - 1))
@@ -226,41 +261,6 @@ void flipCell(int startRow, int startCol)
       }
     }
   }
-}
-
-boolean canPutCell(int startRow, int startCol)
-{
-  boolean tempBool = false;
-
-  for (int dirRow = -1; dirRow < 2; dirRow++)
-  {
-    for (int dirCol = -1; dirCol < 2; dirCol++)
-    {
-      int curRow = startRow + dirRow;
-      int curCol = startCol + dirCol;
-
-      while (field[curRow][curCol] == -hasStone)//相手の石ならループ
-      {
-        curRow += dirRow;
-        curCol += dirCol;
-
-        if (field[curRow][curCol] == hasStone) 
-        {
-          tempBool = true;
-        } else
-        {
-          tempBool = false;
-        }
-      }
-    }
-  }
-
-  if (field[startRow][startCol] != 0) 
-  {
-    tempBool = false; //置く場所が空いているか
-  }
-
-  return tempBool;
 }
 
 /*
