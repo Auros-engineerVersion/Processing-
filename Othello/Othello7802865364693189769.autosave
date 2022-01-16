@@ -31,6 +31,51 @@ int mousePos(float mousePos)//ここで設置する場所を決める
   return tempInt;
 }
 
+boolean isCellExist(int startRow, int startCol)//四方八方に駒があるか検知
+{
+  boolean tempBool = false;
+
+  for (int dirRow = -1; dirRow < 2; dirRow++)
+  {
+    for (int dirCol = -1; dirCol < 2; dirCol++)
+    {
+      if (field[startRow + dirRow][startCol + dirCol] != 0 && 
+        field[startRow + dirRow][startCol + dirCol] != 2)
+      {
+        tempBool= true;
+      } else
+      {
+        tempBool= false;
+      }
+    }
+  }
+
+  return tempBool;
+}
+
+boolean isSameColor(int startRow, int startCol, int stoneColor)//色が同じか検知
+{
+  boolean tempBool = false;
+  for (int dirRow = -1; dirRow < 2; dirRow++)
+  {
+    for (int dirCol = -1; dirCol < 2; dirCol++)
+    {
+      if (field[startRow + dirRow][startCol + dirCol] == stoneColor)
+      {
+        tempBool= true;
+      } else
+      {
+        tempBool= false;
+      }
+    }
+  }
+
+  return tempBool;
+}
+
+//a
+
+
 void setup()
 {
   size(512, 512);
@@ -57,34 +102,22 @@ void draw()
 
 void mousePressed()
 {
-  int row = mousePos(mouseX);
-  int col = mousePos(mouseY);
-
-  println(second());
-  
-  if (canPutCell(row, col))
-  {
-    field[row][col] = hasStone;
-    flipCell(row, col);
-    println("bbb");
-    hasStone *= -1;
-  }
-
-  DebugDraw();
-  println(canPutCell(row, col));
-  println("rowNum = " + row + ", " + "colNum = " + col);
+  PutCell();
 }
 
 void FieldSetUp()
 {
   int iniPos = ((fieldSize) / 2) - 1;
+  int rowNum = 0;//rowのみList形式のため
 
   field = new int[fieldSize][fieldSize];
 
   for (row = 0; row < fieldSize; row++)
   {
+    rowNum++;
     for (col = 0; col < fieldSize; col++)
     {
+
       if ((row == 0 || col == 0) || 
         (row == fieldSize - 1) || (col == fieldSize - 1))
       {
@@ -134,7 +167,7 @@ void DebugDraw()
 
   for (int i = 0; i < fieldSize; i++)
   {
-    if (i != 0)  println();//縦の隙間を作る
+    if (i != 0)  println("");//縦の隙間を作る
     print(i);
 
     for (int j = 0; j < fieldSize; j++)//ベースの碁盤を描写
@@ -142,17 +175,7 @@ void DebugDraw()
       print(strPlus(field[j][i]));
     }
 
-    println();
-  }
-
-  println();
-
-  if (hasStone == 1)
-  {
-    println("This turn is White, hasStone is " + hasStone);
-  } else if (hasStone == -1)
-  {
-    println("This turn is Black, hasStone is " + hasStone);
+    println("");
   }
 }
 
@@ -181,90 +204,95 @@ void GridDraw()//碁盤を書く
   rect(width, 0, (fieldSize - 1) * ((canvasSize / fieldSize)) + rectOffset, height);//右
 }
 
-void CellDraw(int startRow, int startCol)
+void CellDraw(int rowNum, int colNum)
 {
-  if (field[startRow][startCol] != 0)
+  if (field[rowNum][colNum] == 1)
   {
-    if (field[startRow][startCol] == 1)
-    {
-      fill(255);
-    } else if (field[startRow][startCol] == -1)
-    {
-      fill(0);
-    }
-
-    int cellX = startRow * (canvasSize / fieldSize) + (canvasSize / fieldSize / 2);
-    int cellY = startCol * (canvasSize / fieldSize) + (canvasSize / fieldSize / 2);
-    int cellSize = (canvasSize / fieldSize) - 10;
-
-    ellipseMode(CENTER);
-    ellipse(cellX, cellY, cellSize, cellSize);
+    fill(255);
+  } else if (field[rowNum][colNum] == -1)
+  {
+    fill(0);
   }
+
+  int cellX = rowNum * (canvasSize / fieldSize) + (canvasSize / fieldSize / 2);
+  int cellY = colNum * (canvasSize / fieldSize) + (canvasSize / fieldSize / 2);
+  int cellSize = (canvasSize / fieldSize) - 10;
+
+  ellipseMode(CENTER);
+  ellipse(cellX, cellY, cellSize, cellSize);
 }
 
-void flipCell(int startRow, int startCol)
+void PutCell()
 {
+  int row = mousePos(mouseX);
+  int col = mousePos(mouseY);
+
+  ArrayList<Integer> rowList = new ArrayList<Integer>();
+  ArrayList<Integer> colList = new ArrayList<Integer>();
+
+  rowList.clear();
+  colList.clear();
+
   for (int dirRow = -1; dirRow < 2; dirRow++)
   {
     for (int dirCol = -1; dirCol < 2; dirCol++)
     {
-      int curRow = startRow + dirRow;
-      int curCol = startCol + dirCol;
-
-      while (field[curRow][curCol] == -hasStone)//相手の石ならループ
+      if (field[row + dirRow][col + dirCol] != 0 && 
+        field[row + dirRow][col + dirCol] != 2)
       {
-        curRow += dirRow;//それぞれの方向の数を足す。
-        curCol += dirCol;//これで方向の先も検知できる
+        if (!isSameColor(row + dirRow, col + dirCol, hasStone))
+          field[row][col] = hasStone;
+        hasStone *= -1;
 
-        if (field[curRow][curCol] == hasStone)
-        {          
-          while (!(curRow == startRow && curCol == startCol))
-          {
-            field[curRow][curCol] = hasStone;
-            curRow -= dirRow;//1マス戻る
-            curCol -= dirCol;
-          }
-        }
+        rowList.add(row + dirRow);
+        colList.add(col + dirCol);
+
+        println("rowList = " + rowList.get(rowList.size() - 1) + ", " + "colList = " + colList.get(colList.size() - 1));
       }
     }
   }
+
+  DebugDraw();
+
+  println("mouseX = " + row + ", " + "mouseY = " + col);
 }
 
 boolean canPutCell(int startRow, int startCol)
 {
-  boolean tempBool = false;
-
-  for (int dirRow = -1; dirRow < 2; dirRow++)
+  if (field[startRow][startCol] == 0) return false;//置く場所が空いているか
+  if (field[startRow][startCol] != 2) return false;//盤外ではないか
+  
+  for(int dirRow = -1; dirRow < 2; dirRow++)
   {
-    for (int dirCol = -1; dirCol < 2; dirCol++)
+    for(int dirCol = -1; dirCol < 2; dirCol++)
     {
       int curRow = startRow + dirRow;
       int curCol = startCol + dirCol;
-
-      while (field[curRow][curCol] == -hasStone)//相手の石ならループ
-      {
-        curRow += dirRow;
-        curCol += dirCol;
-
-        if (field[curRow][curCol] == hasStone) 
-        {
-          tempBool = true;
-        } else
-        {
-          tempBool = false;
-        }
-      }
+      
+      while(field[curRow][curCol] ==)
     }
   }
-
-  if (field[startRow][startCol] != 0) 
-  {
-    tempBool = false; //置く場所が空いているか
-  }
-
-  return tempBool;
 }
 
+/*
+void a(int row, int col)
+ {
+ ArrayList<Integer> rowList = new ArrayList<Integer>();
+ ArrayList<Integer> colList = new ArrayList<Integer>();
+ 
+ for (int dirRow = -1; dirRow < 2; dirRow++)
+ {
+ for (int dirCol = -1; dirCol < 2; dirCol++)
+ {
+ if (field[startRow + dirRow][startCol + dirCol] != 0 && 
+ field[startRow + dirRow][startCol + dirCol] != 2)
+ {
+ rowList.add(startRow + dirCol);
+ colList.add(startCol + dirCol);
+ }
+ }
+ }
+ }
 /*
  0, -1上
  0, 1下
