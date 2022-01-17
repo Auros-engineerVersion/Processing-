@@ -1,11 +1,13 @@
-private int boundSize = 2; //<>//
-private int fieldSize = 8 + 2;
+int boundSize = 2; //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+int fieldSize = 8 + boundSize;
 int canvasSize = 512;
 
 int cellSize;
 
 int field[][];
-int hasStone = -1;
+int hasStone = 1;
+
+color green = color(0, 140, 0);
 
 String strPlus(int intValue)
 {
@@ -29,27 +31,31 @@ int mousePos(float mousePos)//ここで設置する場所を決める
   return tempInt;
 }
 
-boolean canPutCell(int startRow, int startCol)
+boolean canPutCell(int rowNum, int colNum)
 {
+  int startRow = rowNum;
+  int startCol = colNum;
+
+  if (field[startRow][startCol] == 2)
+  {
+    return false;
+  }
+
   for (int dirRow = -1; dirRow < 2; dirRow++)
   {
     for (int dirCol = -1; dirCol < 2; dirCol++)
     {
       int curRow = startRow + dirRow;
       int curCol = startCol + dirCol;
-      
-      if(field[startRow][startCol] == 2)
-      {
-        return false;
-      }
 
-      if ((curRow != 0 || curCol != fieldSize) && (curCol != 0 || curCol != fieldSize))//盤内なら //<>//
+      if ((curRow != 0 || curCol != fieldSize) || (curCol != 0 || curCol != fieldSize))
+        //盤内またはfield[curRow][curCol]の位置に石があるなら
       {
-        while (field[curRow][curCol] == -hasStone)//相手の石ならループ //<>//
+        while (field[curRow][curCol] == -hasStone)//相手の石ならループ
         {
           curRow += dirRow;
           curCol += dirCol;
-          
+
           if (field[curRow][curCol] == hasStone) 
           {
             return true;
@@ -84,14 +90,21 @@ void draw()
       }
     }
   }
+
+  int rectPosAll;
+  int rectPos = (canvasSize / fieldSize) / 4;
+  int rectPosW;
+  int offset = 5;
+
+  fill(255);
+  rectMode(CORNERS);
+  rect(rectPos, rectPos, rectPos * 1.5, height - rectPos);
 }
 
 void mousePressed()
 {
   int row = mousePos(mouseX);
   int col = mousePos(mouseY);
-
-  println("row = " + row + ", " + "col = " + col);
 
   if (canPutCell(row, col))
   {
@@ -101,11 +114,27 @@ void mousePressed()
   }
 
   DebugDraw();
+  CellNumberChecker();
+  println("row = " + row + ", " + "col = " + col);
 }
 
-void TurnText(int stoneColor)
+void CellNumberChecker()
 {
-  stoneColor = hasStone;
+  int blackNum = 0;
+  int whiteNum = 0;
+
+  //あとで関数にする 
+  for (int rowNum = 0; rowNum < fieldSize; rowNum++)
+  {
+    for (int colNum = 0; colNum < fieldSize; colNum++)
+    {
+      if (field[rowNum][colNum] == -1) blackNum++;
+      if (field[rowNum][colNum] == 1) whiteNum++;
+    }
+  }
+
+  println("black is " + blackNum);
+  println("white is " + whiteNum);
 }
 
 void FieldSetUp()
@@ -130,25 +159,24 @@ void FieldSetUp()
   }
 
   //初期値
-  field[iniPos][iniPos] = hasStone;//white
+  field[iniPos][iniPos] = hasStone;//black
   println(hasStone);
   CellDraw(iniPos, iniPos);
   hasStone *= -1;
 
-  field[iniPos + 1][iniPos] = hasStone;//black
+  field[iniPos + 1][iniPos] = hasStone;//white
   println(hasStone);
   CellDraw(iniPos + 1, iniPos);
   hasStone *= -1;
 
-  field[iniPos + 1][iniPos + 1] = hasStone;//white
+  field[iniPos + 1][iniPos + 1] = hasStone;//black
   println(hasStone);
   CellDraw(iniPos + 1, iniPos + 1);
   hasStone *= -1;
 
-  field[iniPos][iniPos + 1] = hasStone;//black
+  field[iniPos][iniPos + 1] = hasStone;//white、その後黒のターンへ
   println(hasStone);
   CellDraw(iniPos, iniPos + 1);
-  hasStone *= -1;
 }
 
 void DebugDraw()
@@ -206,7 +234,7 @@ void GridDraw()//碁盤を書く
   }
 
   //枠
-  fill(0);
+  fill(green);
   rectMode(CORNERS);
   rect(0, 0, width, (canvasSize / fieldSize) - rectOffset);//上
   rect(0, height, width, (fieldSize - 1) * ((canvasSize / fieldSize)) + rectOffset);//下
