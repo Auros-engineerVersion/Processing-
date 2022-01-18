@@ -36,7 +36,7 @@ boolean canPutCell(int rowNum, int colNum)
   int startRow = rowNum;
   int startCol = colNum;
 
-  if (field[startRow][startCol] == 2)
+  if (field[startRow][startCol] == 2 || field[startRow][startCol] != 0)
   {
     return false;
   }
@@ -48,7 +48,7 @@ boolean canPutCell(int rowNum, int colNum)
       int curRow = startRow + dirRow;
       int curCol = startCol + dirCol;
 
-      if ((curRow != 0 || curCol != fieldSize) || (curCol != 0 || curCol != fieldSize))
+      if ((curRow != 0 || curCol != fieldSize) && (curCol != 0 || curCol != fieldSize))
         //盤内またはfield[curRow][curCol]の位置に石があるなら
       {
         while (field[curRow][curCol] == -hasStone)//相手の石ならループ
@@ -90,15 +90,6 @@ void draw()
       }
     }
   }
-
-  int rectPosAll;
-  int rectPos = (canvasSize / fieldSize) / 4;
-  int rectPosW;
-  int offset = 5;
-
-  fill(255);
-  rectMode(CORNERS);
-  rect(rectPos, rectPos, rectPos * 1.5, height - rectPos);
 }
 
 void mousePressed()
@@ -115,15 +106,40 @@ void mousePressed()
 
   DebugDraw();
   CellNumberChecker();
-  println("row = " + row + ", " + "col = " + col);
+}
+
+void keyPressed()
+{
+  if (key == 'R' || key == 'r')
+  {
+    FieldSetUp();
+    DebugDraw();
+
+    println();
+    println("  =================");
+    println(" ||   ReStart     ||");
+    println("  =================");
+    hasStone = 1;
+  }
+
+  if (key == 'P' || key == 'p')
+  {
+    hasStone *= -1;
+    DebugDraw();
+
+    println();
+    println("  =================");
+    println(" ||     Pass      ||");
+    println("  =================");
+  }
 }
 
 void CellNumberChecker()
 {
   int blackNum = 0;
   int whiteNum = 0;
+  float totalNum = (fieldSize - boundSize) * (fieldSize - boundSize);
 
-  //あとで関数にする 
   for (int rowNum = 0; rowNum < fieldSize; rowNum++)
   {
     for (int colNum = 0; colNum < fieldSize; colNum++)
@@ -133,14 +149,14 @@ void CellNumberChecker()
     }
   }
 
-  println("black is " + blackNum);
-  println("white is " + whiteNum);
+  println("black is " + blackNum + ", " + blackNum / totalNum * 100f + "%");
+  println("white is " + whiteNum + ", " + whiteNum / totalNum * 100f + "%");
+  
+  rectMode(CORNERS);
 }
 
 void FieldSetUp()
 {
-  int iniPos = ((fieldSize) / 2) - 1;
-
   field = new int[fieldSize][fieldSize];
 
   for (int row = 0; row < fieldSize; row++)
@@ -158,24 +174,22 @@ void FieldSetUp()
     }
   }
 
+  int iniPos = ((fieldSize) / 2) - 1;
+
   //初期値
   field[iniPos][iniPos] = hasStone;//black
-  println(hasStone);
   CellDraw(iniPos, iniPos);
   hasStone *= -1;
 
   field[iniPos + 1][iniPos] = hasStone;//white
-  println(hasStone);
   CellDraw(iniPos + 1, iniPos);
   hasStone *= -1;
 
   field[iniPos + 1][iniPos + 1] = hasStone;//black
-  println(hasStone);
   CellDraw(iniPos + 1, iniPos + 1);
   hasStone *= -1;
 
   field[iniPos][iniPos + 1] = hasStone;//white、その後黒のターンへ
-  println(hasStone);
   CellDraw(iniPos, iniPos + 1);
 }
 
