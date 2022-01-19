@@ -1,4 +1,4 @@
-int boundSize = 2; //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
+int boundSize = 2; //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
 int fieldSize = 8 + boundSize;
 int canvasSize = 512;
 
@@ -6,6 +6,9 @@ int cellSize;
 
 int field[][];
 int hasStone = 1;
+
+float blackPer = 0;
+float whitePer = 0;
 
 color green = color(0, 140, 0);
 
@@ -90,6 +93,8 @@ void draw()
       }
     }
   }
+
+  CellNumRect();
 }
 
 void mousePressed()
@@ -149,14 +154,39 @@ void CellNumberChecker()
     }
   }
 
-  println("black is " + blackNum + ", " + blackNum / totalNum * 100f + "%");
-  println("white is " + whiteNum + ", " + whiteNum / totalNum * 100f + "%");
-  
+  blackPer = blackNum / totalNum;
+  whitePer = whiteNum / totalNum;
+}
+
+void CellNumRect()//充填率を表す
+{
+  float rectPos = (canvasSize / fieldSize) / 4;
+  float rectHeight = canvasSize - rectPos;
+
+  float rectLowPos = canvasSize - ((canvasSize / fieldSize) / 4); //<>//
+
   rectMode(CORNERS);
+  strokeWeight(2.5);
+  fill(green);
+  rect(rectPos, rectPos, rectPos * 3, rectHeight);//下地
+
+  strokeWeight(1);
+
+  if (whitePer > 0)
+    // whitePerが0 == 初期の場合、rectHeight * whitePerが0となり、枠を上に突き抜けるため
+  {
+    fill(255);
+    rect(rectPos, rectPos, rectPos * 3, rectHeight * whitePer); //白
+  }
+
+  fill(0);
+  rect(rectPos, rectLowPos, rectPos * 3, rectHeight * (1 - blackPer));//黒
 }
 
 void FieldSetUp()
 {
+  blackPer = 0;
+  whitePer = 0;
   field = new int[fieldSize][fieldSize];
 
   for (int row = 0; row < fieldSize; row++)
